@@ -56,5 +56,20 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                         
                         # calculate p-values
                         p_val <<- pt(reg_coef, df)
+                        
+                        # resid function
+                        resid <- function(){
+                          return(as.vector(res_val))
+                        }
+                        
+                        # pred function
+                        pred <- function(){
+                          return(fit_val)
+                        }
+                        
+                        # coef function
+                        coef <- function(){
+                          return(reg_coef)
+                        }
                       }))
                                
