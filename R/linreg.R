@@ -1,4 +1,6 @@
-#' Title
+#' Linear Regression
+#' 
+#' @name linreg
 #'
 #' @field formula formula. 
 #' @field data data.frame. 
@@ -11,10 +13,15 @@
 #' @field t_val numeric. 
 #' @field p_val array. 
 #'
-#' @return
-#' @export
 #'
 #' @examples
+#' data(iris)
+#' mod_object <- lm(Petal.Length~Species, data = iris)
+#' print(mod_object)
+#' 
+#' 
+#' @return Linear Regression
+#' @export
 linreg <- setRefClass("linreg", fields = list(formula = "formula",
                                               data = "data.frame",
                                               reg_coef = "numeric",
@@ -26,8 +33,6 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                                               t_val = "numeric",
                                               p_val = "array"),
                       methods = list(initialize = function(formula, data){
-                        formula <<- formula # Bunu kaldır bak 
-                        data <<- data # Bunu kaldır bak 
                         
                         X <- model.matrix(formula, data)
                         y <- as.matrix(data[, names(data)==all.vars(formula)[1]]) # daha farklı yaz
