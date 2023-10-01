@@ -30,7 +30,7 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                                               fit_val = "array",
                                               res_val = "array",
                                               dof = "integer",
-                                              res_var = "array",
+                                              res_var = "numeric",
                                               var_reg_coef = "array",
                                               t_val = "array",
                                               p_val = "array",
@@ -58,10 +58,10 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                           dof <<- nrow(X) - ncol(X)
                         
                           # calculate residual variance
-                          res_val <<- (t(res_val) %*% res_val)/dof
+                          res_var <<- as.numeric((t(res_val) %*% res_val)/dof)
                         
                           # calculate the variance of the regression coefficients
-                          var_reg_coef <<- as.numeric(res_val) * solve((t(X)%*%X))
+                          var_reg_coef <<- as.numeric(res_var) * solve((t(X)%*%X))
                         
                           # calculate t_values for each coefficient
                           t_val <<- reg_coef / (sqrt(diag(var_reg_coef)))
@@ -106,6 +106,17 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                           cat(new_reg_coef_name)
                           cat(sep="\n")
                           cat(new_reg_coef)
-                          }
+                          },
+                        summary = function(){
+                          "This function prints out the coefficients with their standard error, t-value and p-value"
+                        
+                          new_data <- as.data.frame(cbind(reg_coef, reg_coef / t_val, t_val, p_val, "***"))
+                          colnames(new_data) <- c("Estimate", "Standard Error", "T value", "P value", "")
+                          print.data.frame(new_data)
+                          cat("Residual standard error: ", 
+                              sqrt(res_var), 
+                              " on ", dof, " degrees of freedom", sep = "")
+                          
+                        }
                         ))
                                
