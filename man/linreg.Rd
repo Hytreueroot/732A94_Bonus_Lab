@@ -17,7 +17,7 @@ Linear Regression
 
 \item{\code{data}}{data.frame.}
 
-\item{\code{reg_coef}}{numeric.}
+\item{\code{reg_coef}}{array.}
 
 \item{\code{fit_val}}{numeric.}
 
@@ -34,10 +34,23 @@ Linear Regression
 \item{\code{p_val}}{array.}
 }}
 
+\section{Methods}{
+
+\describe{
+\item{\code{coef()}}{This function returns regression coefficients}
+
+\item{\code{pred()}}{This function returns fitted value}
+
+\item{\code{print()}}{This function prints out the coefficients and coefficient names}
+
+\item{\code{resid()}}{This function returns residuals value}
+
+\item{\code{summary()}}{This function prints out the coefficients with their standard error, t-value and p-value}
+}}
 
 \examples{
 data(iris)
-mod_object <- lm(Petal.Length~Species, data = iris)
+mod_object <- linreg(Petal.Length~Species, data = iris)
 print(mod_object)
 
 
