@@ -41,8 +41,7 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                           data <<- data
                           data_name <<- deparse(substitute(data))
                           X <- model.matrix(formula, data)
-                          y <- all.vars(formula)[1]
-                          y <- as.matrix(data[, names(data)==y])
+                          y <- as.matrix(data[all.vars(formula)[1]])
                         
                           # calculate regression coefficients
                           reg_coef <<- solve(t(X)%*%X) %*% t(X)%*%y
@@ -67,7 +66,8 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                           t_val <<- reg_coef / (sqrt(diag(var_reg_coef)))
                         
                           # calculate p-values
-                          p_val <<- pt(reg_coef, dof)
+                          # https://cosmosweb.champlain.edu/people/stevens/webtech/R/Chapter-9-R.pdf
+                          p_val <<- 2*pt(abs(t_val), dof, lower.tail = FALSE)
                           },
                         resid = function(){
                           "This function returns residuals value"
@@ -94,13 +94,9 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                           
                           new_reg_coef[1] <- format(new_reg_coef[1], width = max(nchar(new_reg_coef[1]),nchar(new_reg_coef_name[1]),nchar("Coefficients"))+5,justify = "r")
                           new_reg_coef_name[1]<-format(new_reg_coef_name[1], width=max(nchar(new_reg_coef[1]),nchar(new_reg_coef_name[1]),nchar("Coefficients")),justify = "r")
-                          #new_reg_coef[1]<-paste(new_reg_coef[1],"  ",sep="")
-                          #new_reg_coef_name[1]<-paste(new_reg_coef_name[1],"  ",sep="")
                           
                           for(i in 2:length(new_reg_coef)){
                             new_reg_coef[i] <- format(new_reg_coef[i], width = max(nchar(new_reg_coef_name[i]), nchar(new_reg_coef[i])), justify = "r")
-                            #new_reg_coef[i] <- paste(new_reg_coef[i], " ", sep="")
-                            #new_reg_coef_name[i] <- paste(new_reg_coef_name[i], " ", sep="")
                           }
                           
                           cat(new_reg_coef_name)
@@ -113,9 +109,7 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                           new_data <- as.data.frame(cbind(reg_coef, reg_coef / t_val, t_val, p_val, "***"))
                           colnames(new_data) <- c("Estimate", "Standard Error", "T value", "P value", "")
                           print.data.frame(new_data)
-                          cat("Residual standard error: ", 
-                              sqrt(res_var), 
-                              " on ", dof, " degrees of freedom", sep = "")
+                          cat("Residual standard error: ", sqrt(res_var), " on ", dof, " degrees of freedom", sep = "")
                           
                         }
                         ))
