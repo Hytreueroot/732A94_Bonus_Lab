@@ -1,28 +1,40 @@
 #' Linear Regression
 #' 
-#' @name linreg
-#'
+#' @description
+#' A package to handle linear regression models with using linear algebra.
+#' Implement a RC class to handle special functions: print(), plot(), resid(), 
+#' pred(), coef() and summary().
+#' 
 #' @field formula formula. 
 #' @field data data.frame. 
-#' @field reg_coef array. 
-#' @field fit_val numeric. 
-#' @field res_val numeric. 
-#' @field dof numeric. 
-#' @field res_var matrix. 
-#' @field var_reg_coef numeric. 
-#' @field t_val numeric. 
-#' @field p_val array. 
+#' @field reg_coef Regression coefficients. 
+#' @field fit_val The fitted values. 
+#' @field res_val The residuals. 
+#' @field dof The degree of freedom. 
+#' @field res_var The residual variance. 
+#' @field var_reg_coef The variance of the regression coefficients. 
+#' @field t_val The t-values for each coefficient. 
+#' @field p_val P-values for each regression coefficients.
 #'
+#' @param formula object of class 'linreg': a symbolic description of the model to be fitted.
+#' @param data data frame containing the variables in the model. 
 #'
+#' @return Returns an object of class 'linreg'. 
+#' 
 #' @examples
 #' data(iris)
 #' mod_object <- linreg(Petal.Length~Species, data = iris)
-#' print(mod_object)
+#' mod_object$print()
+#' mod_object$resid()
+#' mod_object$pred()
+#' mod_object$coef()
+#' mod_object$summary()
 #' 
+#' @importFrom methods new
 #' 
-#' @return Linear Regression
-#' @export linreg
 #' @exportClass linreg
+#' @export linreg
+
 
 linreg <- setRefClass("linreg", fields = list(formula = "formula",
                                               data = "data.frame",

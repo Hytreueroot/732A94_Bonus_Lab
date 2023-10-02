@@ -1,16 +1,21 @@
 Package: Lab4
 Type: Package
-Title: What the package does (short line)
+Title: Multiple Regression Model
 Version: 1.0
-Date: 2023-09-27
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Date: 2023-10-02
+Author: SILA KILICOGLU (silki753@student.liu.se) and SAMI FURKAN YILDIRIM (samyi572@student.liu.se)
+Maintainer: SILA KILICOGLU <silakilicoglu@gmail.com>
+Description: Advance R Programming Lab 4 Assingment.
+License: GPL-2 | file LICENSE
+Encoding: UTF-8
+LazyData: true
 RoxygenNote: 7.2.3
+Depends: 
+    R (>= 2.10)
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+Imports: methods
