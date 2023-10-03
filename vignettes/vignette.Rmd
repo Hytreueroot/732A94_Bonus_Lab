@@ -1,5 +1,7 @@
 ---
 title: "vignette"
+author: "SILA KILICOGLU (silki753@student.liu.se) and SAMI FURKAN YILDIRIM (samyi572@student.liu.se)"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{vignette}
@@ -13,7 +15,88 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+## **Description**
+A package to handle linear regression models with using linear algebra and RC class function.
 
+## **Import**
 ```{r setup}
+library(ggplot2)
+library(gridExtra)
 library(Lab4)
+```
+
+## **Arguments**
+* _formula_
+: object of class 'linreg', a symbolic description of the model to be fitted.
+
+* _data_
+: a data frame, containing the variables in the model.
+
+## **Methods**
+* _print()_
+: This function print out the coefficients and coefficient names, similar as done by the lm class.
+
+* _plot()_
+: This function print out two graph ("Residuals vs Fitted" and "Scale-Location") using ggplot2.
+
+* _resid()_
+: This function print out the vector of residuals $\hat{e}$.
+
+* _pred()_
+: This function print out the predicted values $\hat{y}$.
+
+* _coef()_
+: This function print out the coefficients as a named vector.
+
+* _summary()_
+: This function print out a similar print out as printed for lm objects. It presents the coefficients with their standard error, t-value and p-value as well as the estimate of $\hat{σ}$ and the degrees of freedom in the model.
+
+***********************
+## An Example of Usage
+
+1. Load data. Here iris dataset is used.
+```r
+data(iris)
+```
+
+2. Create a linear model; create an instance of the _linreg_ reference class. Here formula is _Petal.Length~Species_ and data is _iris_.
+
+```r
+mod_object = linreg(Petal.Length~Species, data = iris)
+```
+
+3. For using print function:
+
+```r
+mod_object$print()
+```
+
+4. For using plot function:
+
+```r
+mod_object$plot()
+```
+
+5. For using resid function:
+
+```r
+mod_object$resid()
+```
+
+6. For using pred function:
+
+```r
+mod_object$pred()
+```
+
+7. For using coef function:
+
+```r
+mod_object$coef()
+```
+
+8. For using summary function:
+
+```r
+mod_object$summary()
 ```

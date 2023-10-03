@@ -47,6 +47,8 @@ pred(), coef() and summary().
 \describe{
 \item{\code{coef()}}{This function returns regression coefficients}
 
+\item{\code{plot()}}{This function plots the following two plots: Residuals vs Fitted, Scale-Location}
+
 \item{\code{pred()}}{This function returns fitted value}
 
 \item{\code{print()}}{This function prints out the coefficients and coefficient names}

@@ -129,10 +129,11 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                         },
                         
                         plot = function(){
-                          
+                          "This function plots the following two plots: Residuals vs Fitted, Scale-Location"
                           library(ggplot2)
                           library(gridExtra)
                           
+                          #https://www.marsja.se/how-to-make-a-residual-plot-in-r-interpret-them-ggplot2/
                           
                           pointlabel <- array(rep("", 150))
                           pointlabel[c(99, 118, 119)] <- c(99, 118, 119)
