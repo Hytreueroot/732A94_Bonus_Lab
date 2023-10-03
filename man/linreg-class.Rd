@@ -64,5 +64,6 @@ mod_object$resid()
 mod_object$pred()
 mod_object$coef()
 mod_object$summary()
+mod_object$plot()
 
 }

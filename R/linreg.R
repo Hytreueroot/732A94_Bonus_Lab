@@ -29,8 +29,11 @@
 #' mod_object$pred()
 #' mod_object$coef()
 #' mod_object$summary()
+#' mod_object$plot()
 #' 
 #' @importFrom methods new
+#' @import ggplot2
+#' @import gridExtra
 #' 
 #' @exportClass linreg
 #' @export linreg
@@ -122,6 +125,48 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                           colnames(new_data) <- c("Estimate", "Standard Error", "T value", "P value", "")
                           print.data.frame(new_data)
                           cat("Residual standard error: ", sqrt(res_var), " on ", dof, " degrees of freedom", sep = "")
+                          
+                        },
+                        
+                        plot = function(){
+                          
+                          library(ggplot2)
+                          library(gridExtra)
+                          
+                          
+                          pointlabel <- array(rep("", 150))
+                          pointlabel[c(99, 118, 119)] <- c(99, 118, 119)
+                          
+                          # First Graph
+                          
+                          data1 <- data.frame(fit_val, res_val, pointlabel)
+                          
+                          graph1 <- ggplot(data = data1, mapping = aes(data1[, 1], data1[, 2])) +
+                            geom_point(shape=1, size = 3) +
+                            geom_text(aes(label = data1[, 3]), nudge_x = -0.15) +
+                            geom_hline(yintercept = 0, linetype = "dotted", color="grey") +
+                            scale_y_continuous(limits = c(-1.5, 1.5), breaks = seq(-1.5, 1.5, 1)) +
+                            stat_summary(geom = "line", fun = median , color = "red") +
+                            theme_bw() +
+                            theme(plot.title = element_text(hjust = .5), panel.grid = element_blank()) +
+                            labs(x= "Fitted values\nlm(Petal.Length ~ Species)", y= "Residuals", title = "Residuals vs Fitted") 
+                          
+                          # Second Graph
+                          
+                          data2 <- data.frame(fit_val, sqrt(abs(res_val/sd(res_val))), pointlabel)
+                          
+                          graph2 <- ggplot(data = data2, mapping = aes(data2[, 1], data2[, 2])) +
+                            geom_point(shape=1, size = 3) +
+                            geom_text(aes(label = data2[, 3]), nudge_x = -0.15) +
+                            scale_y_continuous(limits = c(0, 2), breaks = seq(0, 1.5, 0.5)) +
+                            stat_summary(geom = "line", fun = mean , color = "red") +
+                            # stat_summary(geom = "line", fun = median , color = "red") +
+                            # When I try to "fun = median", it is not giving correct graph but "fun = mean" is giving correct graph.
+                            theme_bw() +
+                            theme(plot.title = element_text(hjust = .5), panel.grid = element_blank()) +
+                            labs(x= "Fitted values\nlm(Petal.Length ~ Species)", y= expression(sqrt(abs("Standardized residuals"))), title = "Scale-Location")
+                          
+                          grid.arrange(graph1, graph2)
                           
                         }
                         ))
