@@ -57,7 +57,11 @@ mod_object$summary()
 Install the package using the following code in R.
 
 ```ruby
-devtools::install_github("Hytreueroot/732A94_Lab4")
+devtools::install_github("Hytreueroot/732A94_Lab4", build_vignettes=TRUE)
+```
+For browse vignette:
+```ruby
+browseVignettes(package="Lab4")
 ```
 
 ## Contributors
