@@ -75,4 +75,5 @@ mod_object <- ridgereg(Petal.Length~Species, data = iris, lambda = 0.5)
 mod_object$print()
 mod_object$coef()
 mod_object$predict()
+
 }

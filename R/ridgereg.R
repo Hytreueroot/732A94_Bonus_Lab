@@ -35,9 +35,8 @@
 #' mod_object$print()
 #' mod_object$coef()
 #' mod_object$predict()
+#' 
 #' @importFrom methods new
-#' @import ggplot2
-#' @import gridExtra
 #' 
 #' @exportClass ridgereg
 #' @export ridgereg
