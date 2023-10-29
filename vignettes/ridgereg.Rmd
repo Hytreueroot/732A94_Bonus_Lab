@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 ## 1. Import necessary libraries
 ```{r}
-#library(Lab4)
+library(Lab4)
 library(mlbench)
 library(caret)
 library(leaps)
@@ -68,41 +68,58 @@ print(fitted_lm)
 print(fitted_lm_forward)
 print(develop_fitted_lm)
 ```
-## 5. Fit a ridge regression model using the _"ridgereg()"_ function to the training dataset for different
-values of λ.
+## 5. Fit a ridge regression model using the _"ridgereg()"_ function to the training dataset for different values of λ.
 ```{r}
-#ridge_model_info <- list(label= "Custom Ridge Regression Model",
-#                         library = "Lab4",
-#                         loop = NULL,
-#                         prob = NULL,
-#                         type = "Regression",
-#                         parameters = data.frame(parameter = "lambda",
-#                                                 class = "numeric",
-#                                                 label = "Lambda"),
-#                         grid = function(x, y, len=NULL, search = "grid"){
-#                           data.frame(lambda = seq(0,2,by=0.25))
-#                         },
-#                         fit = function(x, y, wts, param, lev, last, classProbs, ...){
-#                           if(is.data.frame(x)){
-#                             data = x
-#                             }
-#                           else{
-#                             data = as.data.frame(x)
-#                             }
-#                           data$.outcome <- y
-#                           out <- Lab4::ridgereg$new(.outcome ~ ., data = data, lambda=param$lambda, ...)
-#                           out
-#                           },
-#                         predict = function(modelFit, newdata, submodels=NULL){
-#                           if(!is.data.frame(newdata)){
-#                             newdata <- as.data.frame(newdata)}
-#                           modelFit$predict(newdata)
-#                           }
-#                         )
+ridge_model_info <- list(label= "Custom Ridge Regression Model",
+                         library = "Lab4",
+                         type = "Regression",
+                         parameters = data.frame(parameter = "lambda",
+                                                 class = "numeric",
+                                                 label = "Lambda"),
+                         grid = function(x, y, len=NULL, search = "grid"){
+                           data.frame(lambda=seq(0.1, 5, 0.2))
+                         },
+                         fit = function(x, y, wts, param, lev, last, classProbs, ...){
+                            Lab4::ridgereg$new(y~x, as.data.frame(cbind(x,y)), lambda = param$lambda)
+                           },
+                         predict = function(modelFit, newdata, submodels=NULL){
+                           modelFit$predict(newdata)
+                           },
+                         prob=NULL,
+                         sort=NULL
+                         )
 ```
 
 ```{r}
-#ridge_fit <- train( tax ~ ., data=training_set, method=ridge_model_info)
-#print(ridge_fit)
-#plot(ridge_fit)
+ridge_fit_0 <- train(tax~., 
+                 data=training_set, 
+                 method=ridge_model_info)
+ridge_fit_0
 ```
+
+Furthermore, find the best hyperparameter value for λ using 10-fold cross-validation on the training set.
+```{r}
+ridge_fit <- train(tax~., data=training_set, method=ridge_model_info, tuneLength=10, preProc = c("scale","center"), trControl=trainControl(method = "repeatedcv", 
+                           number=10, 
+                           repeats = 10))
+ridge_fit
+ridge_fit$bestTune
+```
+## 6. Evaluate the performance of all three models on the test dataset.
+
+_Linear Regression Model_:
+```{r}
+preds_lm <- predict(fitted_lm, test_set)
+postResample(preds_lm, test_set$tax)
+```
+_Linear Regression Model with Forward Selection_:
+```{r}
+preds_lm_fw <- predict(develop_fitted_lm, test_set)
+postResample(preds_lm_fw, test_set$tax)
+```
+_Ridgereg Model_:
+```{r}
+preds_ridge <- predict(ridge_fit, test_set)
+postResample(preds_ridge, test_set$tax)
+```
+According to comparison between 3 models, the second model (linear regression with forward selection) is the best model because of low RMSE and high Rsquared compared to ridge regression and simple linear regression model.

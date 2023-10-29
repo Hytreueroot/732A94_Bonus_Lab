@@ -38,27 +38,13 @@ Implement a RC class to handle special functions: print(), coef() and predict().
 
 \item{\code{Qy}}{matrix.}
 
-\item{\code{reg_coef}}{Regression coefficients.}
-
 \item{\code{fit_val}}{The fitted values.}
-
-\item{\code{res_val}}{The residuals.}
-
-\item{\code{dof}}{The degree of freedom.}
-
-\item{\code{res_var}}{The residual variance.}
-
-\item{\code{var_reg_coef}}{The variance of the regression coefficients.}
-
-\item{\code{t_val}}{The t-values for each coefficient.}
-
-\item{\code{p_val}}{P-values for each regression coefficients.}
 
 \item{\code{data_name}}{character.}
 
-\item{\code{X_mean}}{numeric.}
+\item{\code{reg_coef_ridge}}{Regressions Coefficients of Ridge}
 
-\item{\code{X_var}}{numeric.}
+\item{\code{X_norm}}{Normalization of X}
 }}
 
 \section{Methods}{

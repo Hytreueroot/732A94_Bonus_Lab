@@ -13,17 +13,10 @@
 #' @field Q matrix, from the QR decomposition. 
 #' @field R upper triangular matrix.
 #' @field Qy matrix. 
-#' @field reg_coef Regression coefficients. 
 #' @field fit_val The fitted values. 
-#' @field res_val The residuals. 
-#' @field dof The degree of freedom. 
-#' @field res_var The residual variance. 
-#' @field var_reg_coef The variance of the regression coefficients. 
-#' @field t_val The t-values for each coefficient. 
-#' @field p_val P-values for each regression coefficients.
-#' @field data_name character. 
-#' @field X_mean numeric. 
-#' @field X_var numeric. 
+#' @field data_name character.
+#' @field reg_coef_ridge Regressions Coefficients of Ridge 
+#' @field X_norm Normalization of X
 #'
 #' @param formula object of class 'ridgereg': a symbolic description of the model to be fitted.
 #' @param data data frame containing the variables in the model.
@@ -43,105 +36,67 @@
 #' @import leaps
 #' @import mlbench
 #' 
-#' @exportClass ridgereg
 #' @export ridgereg
+#' @exportClass ridgereg
 ridgereg <- setRefClass("ridgereg", fields = list( formula = "formula",
                                                    data = "data.frame",
                                                    lambda = "numeric",
                                                    X = "matrix",
-                                                   y = "matrix",
+                                                   y = "numeric",
                                                    Q = "matrix",
                                                    R = "matrix",
                                                    Qy = "matrix",
-                                                   
-                                                   reg_coef = "array",
-                                                   fit_val = "array",
-                                                   res_val = "array",
-                                                   dof = "integer",
-                                                   res_var = "numeric",
-                                                   var_reg_coef = "array",
-                                                   t_val = "array",
-                                                   p_val = "array",
+                                                   fit_val = "matrix",
                                                    data_name = "character",
-                                                   
-                                                   X_mean = "numeric",
-                                                   X_var = "numeric"
+                                                   X_norm='matrix',
+                                                   reg_coef_ridge='matrix'
                                                    ),
                                     methods = list(
                                       initialize = function(formula, data, lambda, QR_dec = FALSE){
-                                        formula <<- formula
-                                        data <<- data
-                                        lambda <<- lambda
                                         
                                         # https://stackoverflow.com/questions/36361158/how-to-test-if-an-object-is-a-formula-in-base-r
                                         is.formula <- function(x){
                                           inherits(x, "formula")
                                         }
-                                        
+          
                                         stopifnot(is.data.frame(data), is.logical(QR_dec), is.formula(formula))
+                                        
+                                        formula <<- formula
+                                        data <<- data
+                                        lambda <<- lambda
                                         
                                         data_name <<- deparse(substitute(data))
                                         
                                         X <<- model.matrix(formula, data)
-                                        y <<- as.matrix(data[all.vars(formula)[1]])
+                                        y <<- data[,all.vars(formula)[1]]
                                         
-                                        X_mean <<- numeric()
-                                        X_var <<- numeric()
-                                        
-                                        # For normalize all covariates
-                                        i <- 2
-                                        while (i <= ncol(X)){
-                                          X_mean <<- c(X_mean, mean(X[,i]))
-                                          X_var <<- c(X_var, var(X[,i]))
-                                          i <- i+1
-                                        }
+                                        X_norm <<- cbind(X[,1],scale(X[,-1]))
+                                        reg_coef_ridge <<- solve(t(X_norm)%*%X_norm+lambda*diag(ncol(X_norm)), t(X_norm)%*%y)
+                                        rownames(reg_coef_ridge)[1] <<- '(Intercept)'
                                         
                                         
-                                        k <- 2 
-                                        while (k <= ncol(X)){
-                                          X[,k] <<- (X[,k] - X_mean[k-1]) / sqrt(X_var[k-1]) # xnorm
-                                          k <- k+1
-                                        }
                                         
                                         # https://stat.ethz.ch/R-manual/R-patched/library/base/html/qr.html
                                         # https://pages.stat.wisc.edu/~st849-1/lectures/Orthogonal.pdf
                                         # http://staff.www.ltu.se/~jove/courses/c0002m/least_squares.pdf
                                         # https://math.stackexchange.com/questions/299481/qr-factorization-for-ridge-regression
-                                        if(QR_dec == TRUE){ 
+                                        if(QR_dec == TRUE){
                                           QR <- qr(X)
                                           Q <<- qr.Q(QR)
                                           R <<- qr.R(QR)
                                           Qy <<- t(Q) %*% y
                                           
-                                          reg_coef <<- solve((t(R)%*%R)+(lambda*diag(ncol(X))))%*%(t(X)%*%y)
-                                          fit_val <<- X %*% reg_coef
-                                          res_val <<- y - fit_val
-                                          #res_val <<- round(y - fit_val, 5)
-                                          dof <<- nrow(X) - ncol(X)
-                                          #dof <<- length(X[,1]) - length(X[1,])
-                                          res_var <<- as.numeric((t(res_val) %*% res_val)/dof)
-                                          #res_var <<- (t(res_val) %*% res_val) / dof
-                                          var_reg_coef <<- as.numeric(res_var) * solve((t(R)%*%R))
-                                          t_val <<- reg_coef / sqrt(diag(var_reg_coef))
-                                          p_val <<- 2*pt(abs(t_val), dof, lower.tail = FALSE)
-                                          #p_val <<- 2*pt(-abs(t_val), dof)
+                                          reg_coef_ridge <<- solve((t(R)%*%R)+(lambda*diag(ncol(X_norm))))%*%(t(X_norm)%*%y)
                                           
                                         }
-                                        else{
-                                          reg_coef <<- solve((t(X) %*% X) +(lambda*diag(ncol(X)))) %*% (t(X) %*% y)
-                                          fit_val <<- X %*% reg_coef
-                                          #res_val <<- y - fit_val
-                                          #dof <<- nrow(X) - ncol(X)
-                                          #res_var <<- as.numeric((t(res_val) %*% res_val)/dof)
-                                          #var_reg_coef <<- as.numeric(res_var) * solve((t(X)%*%X))
-                                          #t_val <<- reg_coef / sqrt(diag(var_reg_coef))
-                                          #p_val <<- 2*pt(abs(t_val), dof, lower.tail = FALSE)
-                                        }
+                                        
+                                        fit_val <<- X_norm%*%reg_coef_ridge
+                                        
                                         },
                                       
                                       coef = function(){
                                         "This function returns regression coefficients"
-                                        return(reg_coef)
+                                        return(reg_coef_ridge)
                                       },
                                       
                                       print = function(){
@@ -152,8 +107,8 @@ ridgereg <- setRefClass("ridgereg", fields = list( formula = "formula",
                                         cat("Coefficients:")
                                         cat(sep="\n")
                                         
-                                        new_reg_coef_name <- rownames(reg_coef)
-                                        new_reg_coef <- round(reg_coef, 2)
+                                        new_reg_coef_name <- rownames(reg_coef_ridge)
+                                        new_reg_coef <- round(reg_coef_ridge, 2)
                                         
                                         new_reg_coef[1] <- format(new_reg_coef[1], width = max(nchar(new_reg_coef[1]),nchar(new_reg_coef_name[1]),nchar("Coefficients"))+5,justify = "r")
                                         new_reg_coef_name[1]<-format(new_reg_coef_name[1], width=max(nchar(new_reg_coef[1]),nchar(new_reg_coef_name[1]),nchar("Coefficients")),justify = "r")
@@ -167,18 +122,15 @@ ridgereg <- setRefClass("ridgereg", fields = list( formula = "formula",
                                         cat(new_reg_coef)
                                       },
                                       
-                                      predict = function(df=NA){
-                                        if (is.na(df)){
+                                      predict = function(newdata=NULL){
+                                        if (is.null(newdata)){
                                           return(fit_val)
                                         }
                                         else{
-                                          sd1 <- numeric(length(X)-1)
-                                          for (i in 1:(length(X) - 1)) {
-                                            sd1[i] <- sd(X[,i+1])
-                                          }
-                                          df_norm <- scale(df,colMeans(X[,-1]),sd1)
-                                          pred <- (as.matrix(cbind(1,df_norm))) %*% reg_coef
-                                          return(pred)
+                                          sds <- apply(X[,-1], 2, sd)
+                                          newdata_norm <- scale(newdata,colMeans(X[,-1]),sds)
+                                          prediction <- as.matrix(cbind(1,newdata_norm)) %*% reg_coef_ridge
+                                          return(prediction)
                                         }
                                       }
                                       
