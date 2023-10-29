@@ -1,4 +1,4 @@
-# 732A94_Lab4
+# 732A94_Bonus_Lab
 
 This package is made for 732A94 Advanced Programming in R course.
 
@@ -8,8 +8,8 @@ This package is made for 732A94 Advanced Programming in R course.
 
 
 ## Description
-A package to handle linear regression models with using linear algebra.
-Implement a RC class to handle special functions.
+A package to handle linear regression models with using linear algebra. Implement a RC class to handle special functions.
+Also package take a formula object as well as a dataset and return a ridgereg object. Implement a RC class to handle special functions.
 
 ### print()
 This function print out the coefficients and coefficient names, similar as done by the lm class.
