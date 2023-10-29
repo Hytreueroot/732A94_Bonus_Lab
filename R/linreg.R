@@ -1,5 +1,6 @@
 #' Linear Regression
 #' 
+#' 
 #' @description
 #' A package to handle linear regression models with using linear algebra.
 #' Implement a RC class to handle special functions: print(), plot(), resid(), 
@@ -33,7 +34,6 @@
 #' 
 #' @importFrom methods new
 #' @import ggplot2
-#' @import gridExtra
 #' 
 #' @exportClass linreg
 #' @export linreg
@@ -131,7 +131,6 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                         plot = function(){
                           "This function plots the following two plots: Residuals vs Fitted, Scale-Location"
                           library(ggplot2)
-                          library(gridExtra)
                           
                           #https://www.marsja.se/how-to-make-a-residual-plot-in-r-interpret-them-ggplot2/
                           
@@ -167,7 +166,7 @@ linreg <- setRefClass("linreg", fields = list(formula = "formula",
                             theme(plot.title = element_text(hjust = .5), panel.grid = element_blank()) +
                             labs(x= "Fitted values\nlm(Petal.Length ~ Species)", y= expression(sqrt(abs("Standardized residuals"))), title = "Scale-Location")
                           
-                          grid.arrange(graph1, graph2)
+                          return(list(graph1,graph2))
                           
                         }
                         ))

@@ -1,0 +1,108 @@
+---
+title: "How to do a simple prediction problem using _'ridgereg()'_ function."
+author: "SILA KILICOGLU (silki753@student.liu.se) and SAMI FURKAN YILDIRIM (samyi572@student.liu.se)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to do a simple prediction problem using _'ridgereg()'_ function.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## 1. Import necessary libraries
+```{r}
+#library(Lab4)
+library(mlbench)
+library(caret)
+library(leaps)
+```
+## 2. Split the BostonHousing data into a test and training dataset using the caret package. In this example, the proportion of training dataset to original dataset (tax data (full-value property-tax rate per USD 10,000) in boston housing) is 80%.
+
+```{r}
+set.seed(42)
+data(BostonHousing)
+indx <- createDataPartition(BostonHousing$tax, p = .80, list = FALSE, times = 1)  
+training_set <- BostonHousing[indx,]   
+test_set  <- BostonHousing[-indx,]
+```
+
+## 3. Fit a linear regression model and a fit a linear regression model with forward selection of covariates
+on the training dataset.
+
+```{r}
+#Simple linear regression
+fitted_lm = train(tax~., data=training_set, method="lm")
+summary(fitted_lm)
+
+#Linear regression with forward selection of covariates on the training dataset
+fitted_lm_forward = train(tax~., data=training_set, method = "leapForward")
+summary(fitted_lm_forward)
+```
+
+```{r}
+print(fitted_lm)
+```
+
+```{r}
+print(fitted_lm_forward)
+```
+
+According to the results, zn, indus, rad and medv are recommended features to use for obtaining best lm model in lm method.
+```{r}
+develop_fitted_lm <- train(tax ~ zn + indus + rad + medv, data = training_set, method='lm')
+summary(develop_fitted_lm)
+```
+## 4. Evaluate the performance of this model on the training dataset.
+
+As it can be seen below, it is obtained better result. The value of RMSE is lower in improved model than the first model and Adjusted R-squared is higher in improved model than the first model. Thus, it is improved the model by using leap forward selection, where found related features and modified the function.
+
+```{r}
+print(fitted_lm)
+print(fitted_lm_forward)
+print(develop_fitted_lm)
+```
+## 5. Fit a ridge regression model using the _"ridgereg()"_ function to the training dataset for different
+values of λ.
+```{r}
+#ridge_model_info <- list(label= "Custom Ridge Regression Model",
+#                         library = "Lab4",
+#                         loop = NULL,
+#                         prob = NULL,
+#                         type = "Regression",
+#                         parameters = data.frame(parameter = "lambda",
+#                                                 class = "numeric",
+#                                                 label = "Lambda"),
+#                         grid = function(x, y, len=NULL, search = "grid"){
+#                           data.frame(lambda = seq(0,2,by=0.25))
+#                         },
+#                         fit = function(x, y, wts, param, lev, last, classProbs, ...){
+#                           if(is.data.frame(x)){
+#                             data = x
+#                             }
+#                           else{
+#                             data = as.data.frame(x)
+#                             }
+#                           data$.outcome <- y
+#                           out <- Lab4::ridgereg$new(.outcome ~ ., data = data, lambda=param$lambda, ...)
+#                           out
+#                           },
+#                         predict = function(modelFit, newdata, submodels=NULL){
+#                           if(!is.data.frame(newdata)){
+#                             newdata <- as.data.frame(newdata)}
+#                           modelFit$predict(newdata)
+#                           }
+#                         )
+```
+
+```{r}
+#ridge_fit <- train( tax ~ ., data=training_set, method=ridge_model_info)
+#print(ridge_fit)
+#plot(ridge_fit)
+```

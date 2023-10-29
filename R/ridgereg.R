@@ -1,5 +1,6 @@
 #' Ridge Regression
 #' 
+#' 
 #' @description
 #' A package that take a formula object as well as a dataset and return a ridgereg object.
 #' Implement a RC class to handle special functions: print(), coef() and predict().
@@ -37,6 +38,10 @@
 #' mod_object$predict()
 #' 
 #' @importFrom methods new
+#' @importFrom MASS lm.ridge
+#' @import caret
+#' @import leaps
+#' @import mlbench
 #' 
 #' @exportClass ridgereg
 #' @export ridgereg

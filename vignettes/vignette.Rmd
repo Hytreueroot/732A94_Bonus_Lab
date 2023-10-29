@@ -21,7 +21,6 @@ A package to handle linear regression models with using linear algebra and RC cl
 ## **Import**
 ```{r setup}
 library(ggplot2)
-library(gridExtra)
 library(Lab4)
 ```
 
