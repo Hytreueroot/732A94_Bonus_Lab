@@ -29,9 +29,9 @@ This function print out the vector of residuals $\hat{e}$.
 
 ```ruby
 mod_object$resid()
-```
+``` 
 
-### pred()
+### pred() '
 This function print out the predicted values $\hat{y}$.
 
 ```ruby
@@ -52,12 +52,18 @@ This function print out a similar print out as printed for lm objects. It presen
 mod_object$summary()
 ```
 
+### predict()
+This function print out predicted values for new dataset.
+
+```ruby
+mod_object$predict()
+```
 
 ## Installation
 Install the package using the following code in R.
 
 ```ruby
-devtools::install_github("Hytreueroot/732A94_Lab4", build_vignettes=TRUE)
+devtools::install_github("Hytreueroot/732A94_Bonus_Lab", build_vignettes=TRUE)
 ```
 For browse vignette:
 ```ruby
